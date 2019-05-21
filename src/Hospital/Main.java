@@ -1,4 +1,6 @@
-package Hospital;/*
+package Hospital;
+
+/*
     Створіть модель, яка б дозволяла імітувати слідуючу ситуацію - є приватний лікар.
     Треба надати можливість клієнтам записуватись до нього на прийом на певну дату та годину.
     На прийом клієнта резервується 30 хвилин.
@@ -8,8 +10,8 @@ package Hospital;/*
     Використовуйте колекції, графічний інтерфейс не потрібен.
 */
 
-public class Main {
+class Main {
     public static void main(String[] args) {
-        Window w = new Window();
+        Window window = new Window();
     }
 }

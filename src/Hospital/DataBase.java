@@ -1,21 +1,16 @@
 package Hospital;
 
+import org.jetbrains.annotations.NonNls;
+
 import java.sql.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
-public class DataBase {
-    private String fileName;
-    private String url;
+class DataBase {
+    @NonNls private final String url = "jdbc:sqlite:E:/test.db";
 
-    DataBase(String name) {
-        fileName = name;
-        url = "jdbc:sqlite:E:/" + fileName + ".db";
-    }
-
-    public DataBase() {
-    }
+    DataBase() {}
 
     private Connection connect() {
         Connection conn = null;
@@ -27,7 +22,7 @@ public class DataBase {
         return conn;
     }
 
-    public void createNewDatabase() {
+    void createNewDatabase() {
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -44,14 +39,14 @@ public class DataBase {
 
     private void createTables() {
         // SQL statement for creating a new table
-        String sql1 = "CREATE TABLE IF NOT EXISTS Doctors (\n" +
+        @NonNls String sql1 = "CREATE TABLE IF NOT EXISTS Doctors (\n" +
                 "    Name      TEXT NOT NULL,\n" +
                 "    ID        INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    StartTime TEXT NOT NULL,\n" +
                 "    EndTime   TEXT NOT NULL\n" +
                 ");";
 
-        String sql2 = "CREATE TABLE IF NOT EXISTS Time (\n" +
+        @NonNls String sql2 = "CREATE TABLE IF NOT EXISTS Time (\n" +
                 "    Date     TEXT NOT NULL,\n" +
                 "    Value    TEXT NOT NULL,\n" +
                 "    Name     TEXT NOT NULL,\n" +
@@ -69,9 +64,9 @@ public class DataBase {
         }
     }
 
-    public HashMap<String, Doctor> getDoctors() {
+    HashMap<String, Doctor> getDoctors() {
         HashMap<String, Doctor> docs = new HashMap<>();
-        String sql = "SELECT Name, ID, StartTime, EndTime FROM Doctors";
+        @NonNls String sql = "SELECT Name, ID, StartTime, EndTime FROM Doctors";
 
         try (Connection conn = this.connect();
              Statement stmt = conn.createStatement();
@@ -90,8 +85,8 @@ public class DataBase {
         return docs;
     }
 
-    public Doctor getDoctor(String doctor_name) {
-        String sql = "SELECT Name, ID, StartTime, EndTime FROM Doctors WHERE Name = ?";
+    Doctor getDoctor(String doctor_name) {
+        @NonNls String sql = "SELECT Name, ID, StartTime, EndTime FROM Doctors WHERE Name = ?";
         Doctor doc = null;
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -110,8 +105,8 @@ public class DataBase {
         return doc;
     }
 
-    public void deleteDoctor(String id) {
-        String sql = "DELETE FROM Doctors WHERE id = ?";
+    void deleteDoctor(String id) {
+        @NonNls String sql = "DELETE FROM Doctors WHERE id = ?";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -127,8 +122,8 @@ public class DataBase {
         }
     }
 
-    public void addDoctor(String name, String start, String end) {
-        String sql = "INSERT INTO Doctors(Name, StartTime, EndTime) VALUES(?, ?, ?)";
+    void addDoctor(String name, String start, String end) {
+        @NonNls String sql = "INSERT INTO Doctors(Name, StartTime, EndTime) VALUES(?, ?, ?)";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -143,8 +138,8 @@ public class DataBase {
         }
     }
 
-    public void addTime(String doctor_id, String date_value, String value, String name) {
-        String sql = "INSERT INTO Time (Date, Value, Name, DoctorID) VALUES(?, ?, ?, ?)";
+    void addTime(String doctor_id, String date_value, String value, String name) {
+        @NonNls String sql = "INSERT INTO Time (Date, Value, Name, DoctorID) VALUES(?, ?, ?, ?)";
 
         System.out.println(date_value + " " + value + " " + name);
         try (Connection conn = this.connect();
@@ -161,8 +156,8 @@ public class DataBase {
         }
     }
 
-    public void changeTime(String doctor_id, String time_start, String time_end) {
-        String sql = "UPDATE Doctors SET StartTime = ?, EndTime = ? WHERE ID = ?";
+    void changeTime(String doctor_id, String time_start, String time_end) {
+        @NonNls String sql = "UPDATE Doctors SET StartTime = ?, EndTime = ? WHERE ID = ?";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -178,8 +173,8 @@ public class DataBase {
         }
     }
 
-    public HashMap<LocalTime, String> getTime(String doctor_id, String date) {
-        String sql = "SELECT Name, Value FROM Time WHERE DoctorID = ? AND Date = ?";
+    HashMap<LocalTime, String> getTime(String doctor_id, String date) {
+        @NonNls String sql = "SELECT Name, Value FROM Time WHERE DoctorID = ? AND Date = ?";
 
         HashMap<LocalTime, String> time = new HashMap<>();
         try (Connection conn = this.connect();

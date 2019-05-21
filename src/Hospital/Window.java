@@ -1,21 +1,16 @@
 package Hospital;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Window {
+class Window {
     private JPanel panel1;
     private JTabbedPane tabbedPane1;
     private JPanel docs;
@@ -29,27 +24,27 @@ public class Window {
     private JTextField date;
     private JButton reserve;
     private JTextField time;
-    private JScrollPane textpane;
+    private JScrollPane textPane;
     private JTextArea text;
     private JButton changeTime;
     private JTextField startTimeValue;
     private JTextField endTimeValue;
 
-    private static ResourceBundle myBundle = ResourceBundle.getBundle("myProp");
+    private static final Locale en = new Locale("en", "US");
+    private static final ResourceBundle myBundle = ResourceBundle.getBundle("resources.myProp", en);
 
-    //private static Map<String, Doctor> doctors;
 
-
-    public Window() {
+    @SuppressWarnings("ConstantConditions")
+    Window() {
         JFrame frame = new JFrame("Window");
         frame.setContentPane(panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
 
-        DataBase db = new DataBase("test");
+        DataBase db = new DataBase();
         db.createNewDatabase();
-        //doctors = db.getData();
+
         for (String name : db.getDoctors().keySet()) {
             doctorList.addItem(name);
             doctorList2.addItem(name);
@@ -59,14 +54,11 @@ public class Window {
             Doctor doc = db.getDoctor(doctorList.getSelectedItem().toString());
             startTimeValue.setText(doc.getStartTime().toString());
             endTimeValue.setText(doc.getEndTime().toString());
-
-            db.getTime(doc.getId(), "2019-04-10");
         }
 
         addDoctor.addActionListener((ActionEvent e) -> {
             String name = doctorName.getText();
-
-            String regex = "^([01]\\d|2[0-3]):?([03]0)$";
+            String regex = myBundle.getString("time.reg.exp");
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(startTimeValue.getText());
             Matcher matcher2 = pattern.matcher(endTimeValue.getText());
@@ -98,11 +90,11 @@ public class Window {
 
         reserve.addActionListener(e -> {
             if (date.getText() != null && time.getText() != null && doctorList2.getSelectedItem() != null && name.getText() != null) {
-                String regex = "^(?:(?:31(/)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(/)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(/)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(/)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+                String regex = myBundle.getString("date.reg.exp");
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(date.getText());
                 if (matcher.matches()) {
-                    regex = "^([01]\\d|2[0-3]):?([03]0)$";
+                    regex = myBundle.getString("time.reg.exp");
                     pattern = Pattern.compile(regex);
                     matcher = pattern.matcher(time.getText());
                     if (matcher.matches()) {
@@ -112,7 +104,7 @@ public class Window {
                         Doctor doc = db.getDoctor(doctorList2.getSelectedItem().toString());
                         if (doc.reserveDate(d, t, name.getText())) {
                             if ((t.isAfter(doc.getStartTime()) || t.equals(doc.getStartTime())) && (t.isBefore(doc.getEndTime()) || t.equals(doc.getEndTime()))) {
-                                text.setText("You have reserved Dr. " + doc.getName() + "'s examination for " + name.getText() + " at " + t.toString());
+                                text.setText(myBundle.getString("you.have.reserved.dr") + doc.getName() + myBundle.getString("s.examination.for") + name.getText() + myBundle.getString("at") + t.toString());
                             } else {
                                 text.setText(myBundle.getString("you.can.reserve.time.from") + doc.getStartTime().toString() + myBundle.getString("to") + doc.getEndTime().toString());
                             }
@@ -126,7 +118,7 @@ public class Window {
         });
 
         changeTime.addActionListener(e -> {
-            String regex = "^([01]\\d|2[0-3]):?([03]0)$";
+            String regex = myBundle.getString("time.reg.exp");
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(startTimeValue.getText());
             Matcher matcher2 = pattern.matcher(endTimeValue.getText());
